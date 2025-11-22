@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="700" viewBox="0 0 1100 700">
+  <style>
+    .box { fill: #f4f6fb; stroke: #2b3a55; stroke-width:1.5 }
+    .title { font: bold 14px/1.2 "Segoe UI", Roboto, Arial; fill: #10243a }
+    .text { font: 12px/1.2 "Segoe UI", Roboto, Arial; fill: #253746 }
+    .meta { font: 11px/1.2 "Segoe UI", Roboto, Arial; fill: #6b7788 }
+  </style>
+
+  <!-- Header -->
+  <rect class="box" x="20" y="20" width="760" height="80" rx="8" />
+  <text x="36" y="44" class="title">window-header</text>
+  <text x="36" y="64" class="text">Return (mobile) · Title (topic) · Sub-title (count)</text>
+  <text x="36" y="80" class="text">Actions: Reload · Rename · Export · Max</text>
+
+  <!-- Prompt Toast -->
+  <rect class="box" x="790" y="20" width="290" height="80" rx="8" />
+  <text x="806" y="46" class="title">PromptToast</text>
+  <text x="806" y="66" class="text">SessionConfigModel (modal)</text>
+
+  <!-- Main area -->
+  <rect class="box" x="20" y="120" width="760" height="540" rx="8" />
+  <text x="36" y="140" class="title">chat-main</text>
+
+  <!-- Chat body container -->
+  <rect x="36" y="160" width="500" height="420" class="box" rx="6" />
+  <text x="52" y="180" class="title">chat-body-container</text>
+  <text x="52" y="200" class="text">chat-body (scroll)</text>
+  <text x="52" y="220" class="text">messages[] → message (avatar, model-name, actions, tools, Markdown, images, audio, date)</text>
+
+  <!-- Buttons / actions row -->
+  <rect x="36" y="540" width="500" height="40" class="box" rx="6" />
+  <text x="52" y="558" class="title">ChatActions (按钮行)</text>
+  <text x="52" y="574" class="text">Stop · ToBottom · Settings · UploadImage · Theme · Prompt · Masks · Clear</text>
+  <text x="52" y="590" class="text">Model · Size · Quality · Style · Plugins · ShortcutKey · MCP · RealtimeChat</text>
+
+  <!-- Input panel -->
+  <rect x="36" y="600" width="500" height="50" class="box" rx="6" />
+  <text x="52" y="620" class="text">chat-input-panel: PromptHints · textarea · attach-images · Send</text>
+
+  <!-- Side panel -->
+  <rect x="550" y="160" width="230" height="420" class="box" rx="6" />
+  <text x="566" y="180" class="title">chat-side-panel</text>
+  <text x="566" y="200" class="text">RealtimeChat (expandable)</text>
+
+  <!-- Modals area -->
+  <rect x="550" y="590" width="230" height="60" class="box" rx="6" />
+  <text x="566" y="612" class="text">Modals: Export / Edit / Shortcut / Selectors</text>
+
+  <!-- Meta box -->
+  <rect x="20" y="660" width="1060" height="28" fill="#fff7e6" stroke="#b07a00" rx="4" />
+  <text x="32" y="679" class="meta">Meta: chatStore, promptStore, pluginStore, accessStore · userInput, attachImages, isLoading, promptHints · msgRenderIndex, hitBottom, autoScroll</text>
+
+</svg>

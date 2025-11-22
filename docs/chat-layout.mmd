@@ -1,0 +1,50 @@
+%% Chat layout (Mermaid)
+graph TD
+  Chat["Chat (export)"]
+  subgraph _Chat [ _Chat (主组件) ]
+    Header["window-header\n- 返回 (mobile)\n- 标题: topic\n- 子标题: count\n- 操作按钮: Reload / Rename / Export / Max"]
+    PromptToast["PromptToast\n(会话提示 / SessionConfigModel)"]
+    Main["chat-main"]
+  end
+
+  subgraph Body [消息区 & 输入区]
+    ChatBodyContainer["chat-body-container"]
+    ChatBody["chat-body (scroll, ref=scrollRef)\n- messages 列表 (分页 renderMessages)\n- 每条 message: avatar, model-name, actions, tools, Markdown, images, audio, date"]
+    ClearDivider["ClearContextDivider (条件渲染)"]
+    ChatActions["ChatActions (按钮行)\n- Stop / ToBottom / Settings\n- UploadImage / Theme / Prompt / Masks\n- Clear / Model / Size / Quality / Style\n- Plugins / ShortcutKey / MCP / RealtimeChat"]
+    ChatInputPanel["chat-input-panel\n- PromptHints\n- textarea (#chat-input)\n- attach-images\n- Send button"]
+    ChatBodyContainer --> ChatBody
+    ChatBody --> Messages["messages[] -> message(0..N)"]
+    Messages -->|可能在某处| ClearDivider
+    ChatBodyContainer --> ChatActions
+    ChatActions --> ChatInputPanel
+  end
+
+  subgraph Side [侧边面板]
+    ChatSidePanel["chat-side-panel\n- RealtimeChat (可展开)"]
+  end
+
+  subgraph Modals [顶层模态 / 弹窗]
+    ExportModal["ExportMessageModal"]
+    EditModal["EditMessageModal"]
+    ShortcutModal["ShortcutKeyModal"]
+    SelectorModals["多个 Selector: model/size/quality/style/plugin"]
+  end
+
+  %% 连接关系
+  Chat --> _Chat
+  _Chat --> Header
+  Header --> PromptToast
+  _Chat --> Main
+  Main --> Body
+  Main --> Side
+  ChatBody --> Messages
+  ChatInputPanel --> ChatActions
+  ChatActions --> SelectorModals
+  Chat --> Modals
+  Chat --> PromptToast
+
+  %% 注释（状态 / 钩子）
+  classDef meta fill:#f9f,stroke:#333,stroke-width:0.5;
+  Meta["关键 state & hooks:\n- chatStore, promptStore, pluginStore, accessStore\n- userInput, attachImages, isLoading, promptHints\n- msgRenderIndex, hitBottom, autoScroll\n- useSubmitHandler, useScrollToBottom, useChatCommand"]:::meta
+  Chat --> Meta
