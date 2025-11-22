@@ -7,7 +7,7 @@
   background-color: var(--white);
   min-width: 600px;
   min-height: 370px;
-  max-width: 1200px;
+  max-width: 600px;
 
   display: flex;
   overflow: hidden;
@@ -19,6 +19,12 @@
 
 .container {
   @include container();
+}
+
+/* When sidebar is hidden, collapse its width to avoid reserved space */
+.no-sidebar {
+  --sidebar-width: 0px;
+  --window-content-width: 100%;
 }
 
 @media only screen and (min-width: 600px) {

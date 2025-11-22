@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NextChat — 首页布局示意</title>
+  <style>
+    body { font-family: Inter, Noto Sans, Arial, sans-serif; background:#f5f5f7; margin:24px; }
+    h1 { font-size:18px; }
+    .wrap { max-width:1240px; }
+    .note { color:#444; margin-bottom:12px; }
+    .svg-wrap { border:1px solid #eaeaea; background:#fff; padding:12px; border-radius:8px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>NextChat — 首页布局示意图</h1>
+    <p class="note">该图示反映 `app/components/home.tsx` 与 `home.module.scss` 的主要布局：左侧为侧边栏（`SideBar`），右侧为主内容（`WindowContent`）。移动端侧栏默认隐藏并通过 `.sidebar-show` 展示。</p>
+    <div class="svg-wrap">
+      <!-- 引入 SVG 文件 -->
+      <object type="image/svg+xml" data="./home-layout.svg" width="100%" height="700">无法显示 SVG，请直接打开 `docs/home-layout.svg`。</object>
+    </div>
+  </div>
+</body>
+</html>

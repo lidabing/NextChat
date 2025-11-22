@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700">
+  <style>
+    .bg { fill: #f5f5f7; }
+    .container { fill: #ffffff; stroke: #e6e6ea; stroke-width: 1; rx: 16; ry: 16; filter: drop-shadow(0 6px 20px rgba(0,0,0,0.06)); }
+    .sidebar { fill: #f0f4f8; stroke: #e6e6ea; }
+    .main { fill: #ffffff; }
+    .muted { fill: #8b8b8b; font-size: 12px; }
+    .title { font-size: 16px; font-weight: 700; fill: #111; }
+    .box { fill: #fafafa; stroke: #eee; }
+    .mobile-outline { fill: none; stroke: #cfcfcf; stroke-dasharray: 4 4; }
+    .label { font-size: 13px; fill: #333; }
+    .small { font-size: 11px; fill: #666; }
+  </style>
+
+  <!-- background -->
+  <rect class="bg" x="0" y="0" width="1200" height="700" />
+
+  <!-- desktop container -->
+  <g transform="translate(40,30)">
+    <rect class="container" x="0" y="0" width="1120" height="640" />
+
+    <!-- sidebar -->
+    <g transform="translate(20,20)">
+      <rect class="sidebar" x="0" y="0" width="280" height="600" rx="12" ry="12" />
+      <text class="title" x="20" y="28">侧边栏（`SideBar`）</text>
+      <text class="small" x="20" y="48">logo / title / 按钮</text>
+
+      <!-- chat list area -->
+      <rect class="box" x="16" y="64" width="248" height="420" rx="8" ry="8" />
+      <text class="small" x="26" y="84">会话列表（`.chat-item`）</text>
+      <g transform="translate(26,104)">
+        <rect x="0" y="0" width="208" height="40" rx="6" ry="6" fill="#fff" stroke="#eee" />
+        <rect x="0" y="52" width="208" height="40" rx="6" ry="6" fill="#fff" stroke="#eee" />
+        <rect x="0" y="104" width="208" height="40" rx="6" ry="6" fill="#fff" stroke="#eee" />
+      </g>
+
+      <text class="small" x="20" y="540">底部操作（切换/设置）</text>
+    </g>
+
+    <!-- main window content -->
+    <g transform="translate(340,20)">
+      <rect class="main" x="0" y="0" width="760" height="600" rx="12" ry="12" />
+      <text class="title" x="20" y="28">主内容区（`WindowContent`）</text>
+      <text class="small" x="20" y="48">路由渲染：Chat / NewChat / Settings / …</text>
+
+      <!-- chat header -->
+      <rect class="box" x="16" y="64" width="728" height="56" rx="8" ry="8" />
+      <text class="label" x="28" y="100">聊天头（例如：会话标题、操作按钮）</text>
+
+      <!-- messages area -->
+      <rect x="16" y="136" width="728" height="360" rx="8" ry="8" fill="#fff" stroke="#eee" />
+      <text class="small" x="28" y="156">消息列表（滚动区域）</text>
+      <g transform="translate(28,176)">
+        <rect x="0" y="0" width="560" height="48" rx="8" ry="8" fill="#f8fbff" stroke="#e7f0ff" />
+        <rect x="0" y="72" width="560" height="48" rx="8" ry="8" fill="#fff8f3" stroke="#ffe9d8" />
+        <rect x="0" y="144" width="560" height="48" rx="8" ry="8" fill="#f8fbff" stroke="#e7f0ff" />
+      </g>
+
+      <!-- input area -->
+      <rect class="box" x="16" y="508" width="728" height="64" rx="10" ry="10" />
+      <text class="label" x="28" y="548">输入区（发送按钮、工具栏）</text>
+    </g>
+  </g>
+
+  <!-- mobile sketch on right bottom to show responsive behavior -->
+  <g transform="translate(820,420)">
+    <rect width="280" height="420" rx="18" ry="18" fill="#fff" stroke="#e6e6ea" />
+    <text class="title" x="18" y="28">移动端示意</text>
+    <text class="small" x="18" y="48">侧栏默认隐藏，使用 `.sidebar-show` 展示</text>
+
+    <rect x="18" y="72" width="244" height="84" rx="8" ry="8" fill="#f0f4f8" />
+    <text class="label" x="28" y="118">顶部（logo/按钮）</text>
+
+    <rect x="18" y="170" width="244" height="188" rx="8" ry="8" fill="#fff" stroke="#eee" />
+    <text class="small" x="28" y="190">消息列表（主视图）</text>
+
+    <rect x="18" y="368" width="244" height="34" rx="8" ry="8" fill="#fafafa" stroke="#eee" />
+    <text class="small" x="28" y="390">输入区（底部）</text>
+
+    <!-- collapsed sidebar overlay example -->
+    <rect x="-60" y="72" width="60" height="420" rx="8" ry="8" fill="#f0f4f8" opacity="0.95" />
+    <text class="small" x="-50" y="92" transform="rotate(-90 -50,92)">侧栏（隐藏）</text>
+  </g>
+
+</svg>

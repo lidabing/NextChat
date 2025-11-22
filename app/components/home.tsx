@@ -22,7 +22,7 @@ import {
   Routes,
   useLocation,
 } from "react-router-dom";
-import { SideBar } from "./sidebar";
+// SideBar intentionally removed to hide the sidebar
 import { useAppConfig } from "../store/config";
 import { AuthPage } from "./auth";
 import { getClientConfig } from "../config/client";
@@ -187,11 +187,6 @@ function Screen() {
     if (isSdNew) return <Sd />;
     return (
       <>
-        <SideBar
-          className={clsx({
-            [styles["sidebar-show"]]: isHome,
-          })}
-        />
         <WindowContent>
           <Routes>
             <Route path={Path.Home} element={<Chat />} />
@@ -213,6 +208,7 @@ function Screen() {
       className={clsx(styles.container, {
         [styles["tight-container"]]: shouldTightBorder,
         [styles["rtl-screen"]]: getLang() === "ar",
+        [styles["no-sidebar"]]: true,
       })}
     >
       {renderContent()}
