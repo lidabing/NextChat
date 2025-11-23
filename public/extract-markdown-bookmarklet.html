@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Extract Markdown Bookmarklet</title>
+  <style>body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;padding:24px;max-width:800px} a.bookmark{display:inline-block;padding:8px 12px;background:#0b5fff;color:#fff;border-radius:6px;text-decoration:none} pre{background:#f6f8fa;padding:12px;border-radius:6px;overflow:auto}</style>
+</head>
+<body>
+  <h1>Extract Markdown — Bookmarklet</h1>
+  <p>将下面的按钮拖到浏览器书签栏，或右键复制为书签。</p>
+  <p><a class="bookmark" href="javascript:(function(){try{fetch('/extract-markdown.js').then(r=>r.text()).then(t=>{(0,eval)(t)}).catch(e=>{alert('加载失败：'+e);});}catch(e){alert('执行失败：'+e);} })()">Extract Markdown</a></p>
+  <h2>备用：书签脚本（可手动复制）</h2>
+  <p>可将下面一行作为书签 URL 使用：</p>
+  <pre>javascript:(function(){try{fetch('/extract-markdown.js').then(r=>r.text()).then(t=>{(0,eval)(t)}).catch(e=>{alert('加载失败：'+e);});}catch(e){alert('执行失败：'+e);} })()</pre>
+  <h2>说明</h2>
+  <ul>
+    <li>书签会尝试从与你当前页面同源的 <code>/extract-markdown.js</code> 加载脚本并执行（建议将仓库中的脚本放在你要使用的站点同源位置）。</li>
+    <li>如果你的目标页面对 inline-eval/inline-script 有严格 CSP 限制，书签可能无法运行。在这种情况下，可以把脚本手动粘贴到控制台运行。</li>
+    <li>如需我把脚本改成内联大字符串的纯 bookmarklet（更长），我也可以生成，告诉我要不要。</li>
+  </ul>
+</body>
+</html>
