@@ -9,6 +9,50 @@
 
 // ==================== 第一步：使用 Readability 提取内容 ====================
 
+// 命名空间与加载缓存，避免污染全局与重复加载
+window.__extractMarkdown = window.__extractMarkdown || { _loads: {} };
+
+/**
+ * 按 src 缓存并加载外部脚本（避免重复插入同一 src）
+ * @param {string} src
+ * @param {string} [globalName] - 可选的全局变量名，用于判断是否已加载
+ * @returns {Promise<any>}
+ */
+function loadScriptOnce(src, globalName) {
+  const cache = window.__extractMarkdown._loads;
+  if (cache[src]) return cache[src];
+
+  cache[src] = new Promise((resolve, reject) => {
+    if (globalName && window[globalName]) return resolve(window[globalName]);
+
+    const existing = Array.from(document.scripts).find(s => s.src === src);
+    if (existing) {
+      existing.addEventListener('load', () => resolve(globalName ? window[globalName] : true));
+      existing.addEventListener('error', () => reject(new Error(src + ' 加载失败')));
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = src;
+    script.async = true;
+    script.onload = () => resolve(globalName ? window[globalName] : true);
+    script.onerror = () => reject(new Error(src + ' 加载失败'));
+    document.head.appendChild(script);
+  });
+
+  return cache[src];
+}
+
+/**
+ * 为 Readability 创建一个独立的 Document 克隆，避免直接操作原始 document
+ * @returns {Document}
+ */
+function cloneDocumentForReadability() {
+  const doc = document.implementation.createHTMLDocument('cloned');
+  doc.documentElement.innerHTML = document.documentElement.innerHTML;
+  return doc;
+}
+
 /**
  * 使用 Readability.js 提取网页主要内容
  * @returns {Promise<Object>} 返回提取的文章对象
@@ -17,22 +61,13 @@ async function extractContentWithReadability() {
   console.log('⏳ 第一步：加载 Readability.js...');
   
   // 加载 Readability 库
-  if (!window.Readability) {
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/@mozilla/readability@0.4.2/Readability.js';
-    document.head.appendChild(script);
-    
-    await new Promise((resolve, reject) => {
-      script.onload = resolve;
-      script.onerror = () => reject(new Error('Readability.js 加载失败'));
-    });
-  }
+  await loadScriptOnce('https://cdn.jsdelivr.net/npm/@mozilla/readability@0.4.2/Readability.js', 'Readability');
   
   console.log('✓ Readability.js 加载成功');
   console.log('⏳ 第二步：提取网页内容...\n');
   
   // 创建文档副本，避免修改原始 DOM
-  const documentClone = document.cloneNode(true);
+  const documentClone = cloneDocumentForReadability();
   const reader = new Readability(documentClone);
   const article = reader.parse();
   
@@ -50,6 +85,8 @@ async function extractContentWithReadability() {
   console.log(`  摘要: ${article.excerpt || '无'}\n`);
   
   // 保存到全局变量供后续使用
+  // 同时在命名空间与兼容旧全局上保存
+  window.__extractMarkdown.article = article;
   window.extractedArticle = article;
   
   return article;
@@ -70,16 +107,7 @@ async function convertToMarkdownWithTurndown(article) {
   }
   
   // 加载 Turndown 库
-  if (!window.TurndownService) {
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/turndown@7.1.1/dist/turndown.js';
-    document.head.appendChild(script);
-    
-    await new Promise((resolve, reject) => {
-      script.onload = resolve;
-      script.onerror = () => reject(new Error('Turndown.js 加载失败'));
-    });
-  }
+  await loadScriptOnce('https://cdn.jsdelivr.net/npm/turndown@7.1.1/dist/turndown.js', 'TurndownService');
   
   console.log('✓ Turndown.js 加载成功');
   console.log('⏳ 第四步：转换为 Markdown...\n');
@@ -96,9 +124,23 @@ async function convertToMarkdownWithTurndown(article) {
   // 添加自定义规则：处理 iframe
   turndownService.addRule('iframe', {
     filter: 'iframe',
-    replacement: function(content) {
-      const src = content.src || '';
+    replacement: function(content, node) {
+      const src = node && node.getAttribute ? (node.getAttribute('src') || '') : '';
       return `\n[iframe: ${src}]\n`;
+    }
+  });
+
+  // 将相对链接转换为绝对链接
+  turndownService.addRule('absolute-links', {
+    filter: 'a',
+    replacement: function(content, node) {
+      const href = node.getAttribute('href') || '';
+      try {
+        const abs = new URL(href, window.location.href).href;
+        return `[${content}](${abs})`;
+      } catch (e) {
+        return `[${content}](${href})`;
+      }
     }
   });
   
@@ -123,6 +165,7 @@ ${markdown}`;
   console.log('✓ Markdown 转换成功');
   
   // 保存到全局变量
+  window.__extractMarkdown.markdown = fullMarkdown;
   window.markdownContent = fullMarkdown;
   
   return fullMarkdown;
@@ -170,10 +213,10 @@ async function extractAndConvert() {
     };
     
   } catch (error) {
-    console.error('❌ 错误:', error.message);
+    console.error('❌ 错误:', error);
     return {
       success: false,
-      error: error.message
+      error: error && error.message ? error.message : String(error)
     };
   }
 }
@@ -184,16 +227,45 @@ async function extractAndConvert() {
  * 复制 Markdown 内容到剪贴板
  */
 function copyMarkdownToClipboard() {
-  if (!window.markdownContent) {
+  const text = window.__extractMarkdown && window.__extractMarkdown.markdown ? window.__extractMarkdown.markdown : window.markdownContent;
+  if (!text) {
     console.error('❌ 没有找到 Markdown 内容，请先运行 extractAndConvert()');
     return;
   }
-  
-  navigator.clipboard.writeText(window.markdownContent).then(() => {
-    console.log('✓ Markdown 内容已复制到剪贴板');
-  }).catch(err => {
+
+  copyToClipboard(text);
+}
+
+/**
+ * 复制文本到剪贴板，支持回退方案
+ * @param {string} text
+ */
+async function copyToClipboard(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    try {
+      await navigator.clipboard.writeText(text);
+      console.log('✓ Markdown 内容已复制到剪贴板');
+      return;
+    } catch (e) {
+      // fallthrough to fallback
+    }
+  }
+
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.setAttribute('readonly', '');
+  ta.style.position = 'absolute';
+  ta.style.left = '-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  try {
+    document.execCommand('copy');
+    console.log('✓ Markdown 内容已复制到剪贴板（回退）');
+  } catch (err) {
     console.error('❌ 复制失败:', err);
-  });
+  } finally {
+    document.body.removeChild(ta);
+  }
 }
 
 /**
@@ -218,21 +290,24 @@ function printArticleSummary() {
  * 导出 JSON 格式（用于保存）
  */
 function exportAsJSON() {
-  if (!window.extractedArticle || !window.markdownContent) {
+  const article = window.__extractMarkdown && window.__extractMarkdown.article ? window.__extractMarkdown.article : window.extractedArticle;
+  const markdown = window.__extractMarkdown && window.__extractMarkdown.markdown ? window.__extractMarkdown.markdown : window.markdownContent;
+  if (!article || !markdown) {
     console.error('❌ 没有找到提取的内容');
     return;
   }
-  
+
   const data = {
-    title: window.extractedArticle.title,
-    author: window.extractedArticle.byline,
-    publishedTime: window.extractedArticle.publishedTime,
+    title: article.title,
+    author: article.byline,
+    publishedTime: article.publishedTime,
     url: window.location.href,
-    length: window.extractedArticle.length,
-    markdown: window.markdownContent,
+    length: article.length,
+    markdown: markdown,
     extractedAt: new Date().toISOString()
   };
-  
+
+  // 打印并返回对象，便于控制台复制或进一步处理
   console.log(JSON.stringify(data, null, 2));
   return data;
 }
